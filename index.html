@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="range/moment-precise-range.js"></script>
+</head>
+
+<body>
+<div class="container">
+	<h2>data startu</h2>
+	<div class="input-append date dataStartu">
+		<input size="16" type="text" value="" readonly>
+		<span class="add-on"><i class="icon-th"></i></span>
+	</div>
+	<h2>data konca</h2>
+	<div class="input-append date dataKonca">
+		<input size="16" type="text" value="" readonly>
+		<span class="add-on"><i class="icon-th"></i></span>
+	</div>
+	
+	<h2>Do zapłaty: <span class="price"></span></h2>
+</div>
+
+
+
+
+<script type="text/javascript">
+  
+  
+$(document).ready(function(){
+  var today = moment().format('YYYY-MM-DD HH:mm');       
+  var new_date = moment(today, "YYYY.MM.DD HH:mm");
+  var todayAddMin = new_date.add(6, 'hours').format('YYYY-MM-DD HH:mm');
+  
+  
+      $(".dataStartu input").datetimepicker({
+        format: "yyyy-mm-dd hh:ii",
+        autoclose: true,
+        todayBtn: true,
+        pickerPosition: "bottom",
+		minView: 'day',
+        startDate: today,
+    });
+	   $(".dataKonca input").datetimepicker({
+        format: "yyyy-mm-dd hh:ii",
+        autoclose: true,
+        todayBtn: true,
+        pickerPosition: "bottom",
+		minView: 'day',
+        startDate: todayAddMin,
+    });
+	
+	var startdata = $('.dataStartu input').val();
+	var enddata = $('.dataKonca input').val();
+    var dni;
+    var godziny;
+
+	$('.dataStartu input').val(today);
+	$('.dataKonca input').val(todayAddMin);
+
+  
+
+    $('.dataStartu input').change(function(){
+      var terazData = $('.dataStartu input').val();       
+        var wybranaAkrualnie = moment(terazData, "YYYY.MM.DD HH:mm");
+        var wybranaAkrualnieAddMin = wybranaAkrualnie.add(6, 'hours').format('YYYY-MM-DD HH:mm');
+        $('.dataKonca').datetimepicker('remove');
+        $('.dataKonca input').val(wybranaAkrualnieAddMin);
+        $(".dataKonca").datetimepicker({
+          startDate: wybranaAkrualnieAddMin,
+          format: "yyyy-mm-dd hh:ii",
+          autoclose: true,
+          todayBtn: true,
+          pickerPosition: "bottom",
+          minView: 'day',
+        });
+      
+      
+      
+      
+      
+    var startdata = $('.dataStartu input').val();
+	var enddata = $('.dataKonca input').val();
+    var czasPomiedzy = moment.preciseDiff(startdata, enddata, true);
+    var dni1 = czasPomiedzy.days * 24;
+    var godziny1 = czasPomiedzy.hours;
+    var miesiac1 = czasPomiedzy.months * 30 * 24;
+      console.log(czasPomiedzy);
+      zakres(godziny1, dni1, miesiac1);
+      
+      // Zmienia datę dla daty końca (dodaje tam też 6 godzin minimalne)
+      if ($('.dataKonca input').val() < $('.dataStartu input').val()) {
+        var terazData = $('.dataStartu input').val();       
+        var wybranaAkrualnie = moment(terazData, "YYYY.MM.DD HH:mm");
+          //minimalny czas wynajmu 6 godzin
+        var wybranaAkrualnieAddMin = wybranaAkrualnie.add(6, 'hours').format('YYYY-MM-DD HH:mm');
+        $('.dataKonca').datetimepicker('remove');
+        $('.dataKonca input').val(wybranaAkrualnieAddMin);
+        $(".dataKonca").datetimepicker({
+          startDate: wybranaAkrualnieAddMin,
+          format: "yyyy-mm-dd hh:ii",
+          autoclose: true,
+          todayBtn: true,
+          pickerPosition: "bottom",
+          minView: 'day',
+        });
+      }
+      
+    });
+  
+    $('.dataKonca input').change(function(){
+    var startdata = $('.dataStartu input').val();
+	var enddata = $('.dataKonca input').val();
+    var czasPomiedzy = moment.preciseDiff(startdata, enddata, true);
+    var dni1 = czasPomiedzy.days * 24;
+    var godziny1 = czasPomiedzy.hours;
+    var miesiac1 = czasPomiedzy.months * 30 * 24; 
+      console.log(czasPomiedzy);
+      zakres(godziny1, dni1, miesiac1);
+    });
+  
+    
+
+  var zakres1 = [
+    [ [ 1 , 6 ]  , 60],
+    [ [ 7 , 24 ]  , 119],
+    [ [ 25 , 168 ]  , 99],
+    [ [ 169 , 480 ]  , 79],
+    [ [ 481 , Number.MAX_VALUE ]  , 69],
+];
+
+
+  zakres(1,0,0);
+  //sprawdza zakres liczb i ich cenę 
+  function zakres(godziny1, dni1, miesiac1) {
+    console.log('godziny = ' + godziny1 + ' dni = ' + dni1 + ' miesiace = ' + miesiac1 + " W GODZINACH")
+    for (var i = zakres1.length - 1; i >= 0; i--) { 
+      
+//      var lacznie = (dni1+godziny1+miesiac1)/24;
+      var naIleDni = (dni1+godziny1+miesiac1)/24
+      var razemDni = Math.ceil(naIleDni)
+      console.log(razemDni + 'tyle dni')
+      
+      if(godziny1+dni1+miesiac1 >= zakres1[i][0][0] && godziny1+dni1+miesiac1 <=  zakres1[i][0][1]){
+          console.log(i + ' mieści się w zakresie godzin ' + (dni1+godziny1+miesiac1) + ' a ich cena za dzien to =' + zakres1[i][1] + 'łacznie zapłacisz ' + zakres1[i][1]);
+        $('.price').html(razemDni*zakres1[i][1]+'zł');
+      }
+    }
+  }
+  
+
+  
+});
+    
+</script>     
+</body>
+</html>
