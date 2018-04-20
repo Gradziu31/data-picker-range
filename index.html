@@ -2,6 +2,7 @@
 <html>
 <head>
     <title></title>
+    <meta charset="UTF-8">
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
     <script type="text/javascript" src="jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
@@ -33,9 +34,18 @@
   
   
 $(document).ready(function(){
-  var today = moment().format('YYYY-MM-DD HH:mm');       
+
+  
+  //data z dzis + 1 godzina (oraz zaokraglenie minut)
+  var todayAddOne = moment().format('YYYY-MM-DD HH:00');   
+  var new_dateForToday = moment(todayAddOne, "YYYY.MM.DD HH:mm");
+  var todayAddOneHour = new_dateForToday.add(1, 'hour').format('YYYY-MM-DD HH:mm');
+  
+  
+    //data dziś +6 godzin
+  var today = moment().format('YYYY-MM-DD HH:00');       
   var new_date = moment(today, "YYYY.MM.DD HH:mm");
-  var todayAddMin = new_date.add(6, 'hours').format('YYYY-MM-DD HH:mm');
+  var todayAddMin = new_date.add(7, 'hours').format('YYYY-MM-DD HH:mm');
   
   
       $(".dataStartu input").datetimepicker({
@@ -44,7 +54,7 @@ $(document).ready(function(){
         todayBtn: true,
         pickerPosition: "bottom",
 		minView: 'day',
-        startDate: today,
+        startDate: todayAddOneHour,
     });
 	   $(".dataKonca input").datetimepicker({
         format: "yyyy-mm-dd hh:ii",
@@ -60,11 +70,11 @@ $(document).ready(function(){
     var dni;
     var godziny;
 
-	$('.dataStartu input').val(today);
+	$('.dataStartu input').val(todayAddOneHour);
 	$('.dataKonca input').val(todayAddMin);
 
-  
 
+  
     $('.dataStartu input').change(function(){
       var terazData = $('.dataStartu input').val();       
         var wybranaAkrualnie = moment(terazData, "YYYY.MM.DD HH:mm");
